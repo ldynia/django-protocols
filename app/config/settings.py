@@ -1,5 +1,6 @@
 from pathlib import Path
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'f#365mreuoz(ntukfs*2z681jdls*r4ix38to16%j&a7s-4(vz'
@@ -13,7 +14,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('redis', 6379)],
+            "hosts": ["redis://redis:6379/1"],
         },
     },
 }
@@ -26,7 +27,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'channels',
-    'chat',
+    'websocket',
 ]
 
 MIDDLEWARE = [

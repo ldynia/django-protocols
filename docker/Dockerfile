@@ -10,23 +10,28 @@ WORKDIR /app
 COPY . /app
 
 RUN apt update && apt install -y \
-    curl
+    curl \
+    iproute2 \
+    watch
 
-# # Fixed permissions, create exec:exec and dev:dev
-# RUN sed -i '/999/d;' /etc/group
-# RUN addgroup -S -g 999 exec && adduser -u 999 -SDHG exec exec
-# RUN adduser -DH dev && adduser exec dev
-# RUN chown -R exec:dev \
-#     /app \
-#     /usr/local/bin/ \
-#     /usr/local/lib/python3.7/
-# RUN chmod -R a-w /etc
+# Fixed permissions, create exec:exec and dev:dev
+RUN sed -i '/999/d;' /etc/group && \
+    addgroup --system -gid 999 exec && \
+    adduser --system --uid 999 --ingroup exec exec && \
+    adduser --no-create-home --disabled-password --gecos "" dev && \
+    usermod -aG dev exec
+
+RUN chown -R exec:dev \
+    /app \
+    /usr/local/bin/ \
+    /usr/local/lib/python3.7/
+RUN chmod -R a-w /etc
 
 EXPOSE ${PORT}
 VOLUME /app
 
 HEALTHCHECK CMD curl -f http://localhost:${PORT}/ || exit 1
 
-# USER exec:dev
+USER exec:dev
 
 ENTRYPOINT ["/app/scripts/startup.sh"]

@@ -6,6 +6,6 @@ from django.shortcuts import render
 
 def index(request):
     now = datetime.datetime.now()
-    html = f"<html><body>It is now {now}</body></html>"
-    
+    html = f"<html><body>Django says date is <b>{now}</b></body></html>"
+
     return HttpResponse(html)

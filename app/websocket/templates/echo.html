@@ -1,0 +1,65 @@
+<!-- chat/templates/chat/room.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Soom</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+
+            function wsConnect() {
+                // WebSocket connection
+                var echoSocket = new WebSocket('ws://' + window.location.host + '/api/ws/echo/')
+
+                // Trigger on click event when user press Enter
+                document.querySelector('#chat-message-input').focus()
+                document.querySelector('#chat-message-input').onkeyup = function(e) {
+                    if (e.keyCode === 13) {
+                        document.querySelector('#chat-message-submit').click()
+                    }
+                }
+
+                // Send message
+                document.querySelector('#chat-message-submit').onclick = function(e) {
+                    const message = document.querySelector('#chat-message-input').value
+                    const data = JSON.stringify({'message': message})
+                    if (echoSocket.readyState === echoSocket.OPEN) {
+                        echoSocket.send(data)
+                    }
+                }
+
+                // Receive message
+                echoSocket.onmessage = function(e) {
+                    const data = JSON.parse(e.data)
+
+                    let response = data.message + '\n'
+                    if (data.delay) {
+                        response = data.delay + 's ' + response
+                    }
+
+                    document.querySelector('#chat-log').value += response
+                }
+
+                // Reconnect on server error
+                echoSocket.onclose = function(e) {
+                    console.error('Socket closed unexpectedly')
+                    setTimeout(function() {
+                      wsConnect()
+                    }, 1000);
+                }
+            }
+            wsConnect()
+        })
+        </script>
+</head>
+<body>
+    <div>
+        <input id="chat-message-input" type="text" size="50%"><br>
+        <input id="chat-message-submit" type="button" value="Send">
+    </div>
+    <div>
+        <textarea id="chat-log" cols="69" rows="20"></textarea>
+    </div>
+</body>
+</html>
