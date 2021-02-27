@@ -1,5 +1,10 @@
 version: "3.8"
 services:
+  redis:
+    image: redis
+    container_name: django-pro-redis
+    hostname: django-dev-pro-redis
+  
   webapp:
     build:
       context: ./app

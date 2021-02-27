@@ -1,3 +1,4 @@
 Django
 wsproto
-
+channels
+channels_redis
