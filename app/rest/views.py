@@ -4,34 +4,52 @@ from rest_framework.status import HTTP_200_OK
 from rest_framework.status import HTTP_201_CREATED
 from rest_framework.status import HTTP_204_NO_CONTENT
 from rest_framework.status import HTTP_400_BAD_REQUEST
-from rest_framework.views import APIView
+from rest_framework.viewsets import ViewSet
 
 from rest.models import Dummy
 from rest.serializers import DummySerializer
 
 
-def get_objects(id=None):
-    if type(id) == int or type(id) == str :
+def get(id=None):
+    if type(id) == list:
+        return Dummy.objects.filter(id__in=id)
+
+    if type(id) == int or type(id) == str:
         try:
             return Dummy.objects.get(id=id)
         except Dummy.DoesNotExist:
             raise Http404
-    elif type(id) == list:
-        return Dummy.objects.filter(id__in=id)
-    else:
-        return Dummy.objects.all()
 
-# /api/rest/dummie/id
-class DummyItem(APIView):
+    return Dummy.objects.all()
 
-    def get(self, request, id, format=None):
-        dummy = get_objects(id)
-        serializer = DummySerializer(dummy)
+
+class DummyViewSet(ViewSet):
+
+    def read(self, request, id=None):
+        if id:
+            dummies = get(id)
+            serializer = DummySerializer(dummies)
+
+        if not id and 'id' not in request.query_params:
+            dummies = get()
+            serializer = DummySerializer(dummies, many=True)
+
+        if not id and 'id' in request.query_params:
+            dummies = get(id=request.query_params.getlist('id'))
+            serializer = DummySerializer(dummies, many=True)
 
         return Response(serializer.data)
 
-    def put(self, request, id, format=None):
-        dummy = get_objects(id)
+    def create(self, request):
+        serializer = DummySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+
+    def update(self, request, id=None):
+        dummy = get(id)
         serializer = DummySerializer(dummy, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -39,8 +57,8 @@ class DummyItem(APIView):
 
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
-    def patch(self, request, id, format=None):
-        dummy = get_objects(id)
+    def patch(self, request, id=None):
+        dummy = get(id)
         serializer = DummySerializer(dummy, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -48,29 +66,8 @@ class DummyItem(APIView):
 
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, id, format=None):
-        dummy = get_objects(id)
+    def delete(self, request, id=None):
+        dummy = get(id)
         dummy.delete()
 
         return Response(status=HTTP_204_NO_CONTENT)
-
-# /api/rest/dummies
-class DummyItems(APIView):
-
-    def get(self, request, format=None):
-        dummy = get_objects()
-        if 'id' in request.query_params:
-            ids = request.query_params.getlist('id')
-            dummy = get_objects(id=ids)
-
-        serializer = DummySerializer(dummy, many=True)
-
-        return Response(serializer.data)
-
-    def post(self, request, format=None):
-        serializer = DummySerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=HTTP_201_CREATED)
-
-        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)

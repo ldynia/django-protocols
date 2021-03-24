@@ -6,57 +6,52 @@ Simple Django project for demonstrating how to implement and use various network
 
 ```bash
 $ docker-compose up
+$ docker exec django-pro python manage.py seed 10
 ```
 
 # RPC
 
 [django-modern-rpc](https://pypi.org/project/django-modern-rpc/)
 
-**rpc_client.py**
-```python
-#!/usr/bin/env python3
+[RPC vs REST](https://cloud.google.com/blog/products/application-development/rest-vs-rpc-what-problems-are-you-trying-to-solve-with-your-apis)
+[gRPC vs REST](https://cloud.google.com/blog/products/api-management/understanding-grpc-openapi-and-rest-and-when-to-use-them)
 
-from xmlrpc.client import ServerProxy
+```bash
+# Obtain UUID of network
+$ docker inspect django-pro --format='{{range .NetworkSettings.Networks}}{{.NetworkID}}{{end}}' | head -c12
+a85adb74c466
 
-
-client = ServerProxy('http://localhost:8080/api/rpc')
-
-print('add', client.add(2, 3))
-print('upper', client.upper('hello'))
-print('reverse', client.reverse('live'))
-print('swap', client.swap({'a' : 'one', 'b': 'two'}))
+# Obtain network interface
+$ ip a | grep a85adb74c466 | head -n1 | cut -d':' -f 2
+br-a85adb74c466
 ```
+
+Start [wireshark](https://www.wireshark.org/) and listen to traffick on `br-a85adb74c466` interface.
 
 ```bash
 $ ./rpc_client.py
-```
-
-```bash
-$ docker exec -it django-pro python manage.py shell
->>> from xmlrpc.client import ServerProxy
->>> client = ServerProxy('http://localhost:8080/api/rpc')
->>> print(client.add(2, 3))
+$ chromium rpc_client.html
 ```
 
 # REST API
 
 ```bash
 $ curl -X GET -s 'http://localhost:8080/api/rest/dummies' | jq
-$ curl -X GET -s 'http://localhost:8080/api/rest/dummies/2' | jq
 $ curl -X GET -s 'http://localhost:8080/api/rest/dummies?id=1&id=2&id=3' | jq
-$ curl -X POST -s 'http://localhost:8080/api/rest/dummies' \
+$ curl -X GET -s 'http://localhost:8080/api/rest/dummie/2' | jq
+$ curl -X POST -s 'http://localhost:8080/api/rest/dummie' \
     --form 'day="1"' \
     --form 'weekday="Monday"' \
     --form 'month="January"' \
     --form 'year="1984"' | jq
-$ curl -X PUT -s 'http://localhost:8080/api/rest/dummies/11' \
+$ curl -X PUT -s 'http://localhost:8080/api/rest/dummie/11' \
     --form 'day="2"' \
     --form 'weekday="Tuesday"' \
     --form 'month="February"' \
     --form 'year="1985"' | jq
-$ curl -X PATCH -s 'http://localhost:8080/api/rest/dummies/11' \
+$ curl -X PATCH -s 'http://localhost:8080/api/rest/dummie/11' \
     --form 'year="1984"' | jq
-$ curl -X DELETE -I 'http://localhost:8080/api/rest/dummies/11'
+$ curl -X DELETE -I 'http://localhost:8080/api/rest/dummie/11'
 ```
 
 # Websocket API
@@ -89,6 +84,7 @@ Links:
 ![duplex](https://user.oc-static.com/upload/2018/10/03/15385574202102_Pr%C3%A9sentation%20PowerPoint%20-%20Google%20Chrome_2.jpg)
 
 **Handshake - Request**
+
 ```
 GET /chat HTTP/1.1
 Host: server.example.com
@@ -98,6 +94,7 @@ Origin: http://example.com
 ```
 
 **Handshake - Response**
+
 ```
 HTTP/1.1 101 Switching Protocols
 Upgrade: websocket
@@ -105,6 +102,7 @@ Connection: Upgrade
 ```
 
 **Debugging**
+
 ```bash
 $ docker exec -it django-pro bash
 $ watch -n1 ss -s

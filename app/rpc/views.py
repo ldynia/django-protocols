@@ -14,7 +14,7 @@ def upper(msg):
 @rpc_method
 def reverse(msg):
     return msg[::-1]
-    
+
 
 @rpc_method
 def swap(data):
