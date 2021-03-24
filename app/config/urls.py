@@ -1,14 +1,17 @@
 from django.contrib import admin
 from django.urls import path
+from modernrpc.views import RPCEntryPoint
 
 from frontend.views import index
 from rest.views import DummyItem
 from rest.views import DummyItems
 from websocket import views as ws_view
 
-
 urlpatterns = [
     path('', index),
+
+    # RPC
+    path('api/rpc', RPCEntryPoint.as_view()),
 
     # REST
     path('api/rest/dummies', DummyItems.as_view()),

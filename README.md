@@ -8,6 +8,36 @@ Simple Django project for demonstrating how to implement and use various network
 $ docker-compose up
 ```
 
+# RPC
+
+[django-modern-rpc](https://pypi.org/project/django-modern-rpc/)
+
+**rpc_client.py**
+```python
+#!/usr/bin/env python3
+
+from xmlrpc.client import ServerProxy
+
+
+client = ServerProxy('http://localhost:8080/api/rpc')
+
+print('add', client.add(2, 3))
+print('upper', client.upper('hello'))
+print('reverse', client.reverse('live'))
+print('swap', client.swap({'a' : 'one', 'b': 'two'}))
+```
+
+```bash
+$ ./rpc_client.py
+```
+
+```bash
+$ docker exec -it django-pro python manage.py shell
+>>> from xmlrpc.client import ServerProxy
+>>> client = ServerProxy('http://localhost:8080/api/rpc')
+>>> print(client.add(2, 3))
+```
+
 # REST API
 
 ```bash

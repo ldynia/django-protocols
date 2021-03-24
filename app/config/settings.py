@@ -26,10 +26,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'modernrpc',
     'rest_framework',
     'channels',
     'websocket',
     'rest',
+    'rpc',
+]
+
+MODERNRPC_METHODS_MODULES = [
+    'rpc.views'
 ]
 
 MIDDLEWARE = [
