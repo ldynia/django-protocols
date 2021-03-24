@@ -6,6 +6,7 @@ Simple Django project for demonstrating how to implement and use various network
 
 ```bash
 $ docker-compose up
+$ docker exec django-pro python manage.py seed 10
 ```
 
 # RPC
@@ -42,21 +43,21 @@ $ docker exec -it django-pro python manage.py shell
 
 ```bash
 $ curl -X GET -s 'http://localhost:8080/api/rest/dummies' | jq
-$ curl -X GET -s 'http://localhost:8080/api/rest/dummies/2' | jq
-$ curl -X GET -s 'http://localhost:8080/api/rest/dummies?id=1&id=2&id=3' | jq
-$ curl -X POST -s 'http://localhost:8080/api/rest/dummies' \
+$ curl -X GET -s 'http://localhost:8080/api/rest/dummie?id=1&id=2&id=3' | jq
+$ curl -X GET -s 'http://localhost:8080/api/rest/dummie/2' | jq
+$ curl -X POST -s 'http://localhost:8080/api/rest/dummie' \
     --form 'day="1"' \
     --form 'weekday="Monday"' \
     --form 'month="January"' \
     --form 'year="1984"' | jq
-$ curl -X PUT -s 'http://localhost:8080/api/rest/dummies/11' \
+$ curl -X PUT -s 'http://localhost:8080/api/rest/dummie/11' \
     --form 'day="2"' \
     --form 'weekday="Tuesday"' \
     --form 'month="February"' \
     --form 'year="1985"' | jq
-$ curl -X PATCH -s 'http://localhost:8080/api/rest/dummies/11' \
+$ curl -X PATCH -s 'http://localhost:8080/api/rest/dummie/11' \
     --form 'year="1984"' | jq
-$ curl -X DELETE -I 'http://localhost:8080/api/rest/dummies/11'
+$ curl -X DELETE -I 'http://localhost:8080/api/rest/dummie/11'
 ```
 
 # Websocket API
