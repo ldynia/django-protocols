@@ -9,6 +9,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8080",
+    "http://127.0.0.1:8080"
+]
+
 ASGI_APPLICATION = "config.asgi.application"
 CHANNEL_LAYERS = {
     'default': {
@@ -26,6 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'modernrpc',
     'rest_framework',
     'channels',
@@ -35,10 +42,11 @@ INSTALLED_APPS = [
 ]
 
 MODERNRPC_METHODS_MODULES = [
-    'rpc.views'
+    'rpc.views',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

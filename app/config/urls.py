@@ -1,31 +1,30 @@
 from django.contrib import admin
 from django.urls import path
+from modernrpc.core import JSONRPC_PROTOCOL
 from modernrpc.views import RPCEntryPoint
+
 
 from frontend.views import index
 from rest.views import DummyViewSet
 from websocket import views as ws_view
 
+
 urlpatterns = [
     path('', index),
 
     # RPC
-    path('api/rpc', RPCEntryPoint.as_view()),
+    path('api/rpc/xml', RPCEntryPoint.as_view()),
+    path('api/rpc/json', RPCEntryPoint.as_view(protocol=JSONRPC_PROTOCOL)),
 
     # REST
-    path('api/rest/dummie', DummyViewSet.as_view({
-        'get': 'list',
-        'post': 'create'
-    })),
+    path('api/rest/dummie', DummyViewSet.as_view({'post': 'create'})),
     path('api/rest/dummie/<int:id>', DummyViewSet.as_view({
-        'get': 'retrieve',
+        'get': 'read',
         'put': 'update',
-        'patch': 'partial_update',
-        'delete': 'destroy',
+        'patch': 'patch',
+        'delete': 'delete',
     })),
-    path('api/rest/dummies', DummyViewSet.as_view({
-        'get': 'list'
-    })),
+    path('api/rest/dummies', DummyViewSet.as_view({'get': 'read'})),
 
     # Views for websocket app
     path('api/ws/echo/', ws_view.echo),

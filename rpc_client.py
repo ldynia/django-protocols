@@ -2,9 +2,14 @@
 
 from xmlrpc.client import ServerProxy
 
-client = ServerProxy('http://localhost:8080/api/rpc')
 
-print('add', client.add(2, 3))
-print('upper', client.upper('hello'))
-print('reverse', client.reverse('live'))
-print('swap', client.swap({'a' : 'one', 'b': 'two'}))
+try:
+    # Transport: HTTP, Encoding: XML
+    client = ServerProxy('http://localhost:8080/api/rpc/xml')
+except:
+    print('Error: Could not connect to server!')
+
+print('add(2, 3)', client.add(2, 3))
+print("upper('hello')", client.upper('hello'))
+print("reverse('live')", client.reverse('live'))
+print("swap({'left': 'right'})", client.swap({'left': 'right'}))

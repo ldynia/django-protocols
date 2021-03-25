@@ -3,3 +3,4 @@ channels_redis
 Django
 django-modern-rpc
 djangorestframework
+django-cors-headers

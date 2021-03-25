@@ -1,0 +1,38 @@
+<html lang="en">
+<head>
+    <script src="https://unpkg.com/jquery@3.6.0/dist/jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-xmlrpc/0.4.3/jquery.xmlrpc.min.js"></script>
+    <script script type="text/javascript">
+        $(document).ready(function(){
+            var msg = 'hello'
+            document.getElementById('sent').textContent = msg
+
+            $.xmlrpc({
+                url: 'http://localhost:8080/api/rpc/xml',
+                methodName: 'upper',
+                params: [msg],
+                success: function(response, status, jqXHR) {
+                    document.getElementById('received').textContent = response[0]
+
+                },
+                error: function(jqXHR, status, error) {
+                    console.log('error')
+                }
+            })
+
+        })
+    </script>
+</head>
+<body>
+    <table>
+        <tr>
+            <th>Sent</th>
+            <th>Received</th>
+        </tr>
+        <tr>
+            <td id="sent">TODO</td>
+            <td id="received">TODO</td>
+        </tr>
+    </table>
+</body>
+</html>
