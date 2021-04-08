@@ -17,7 +17,7 @@ $ docker exec django-pro python manage.py seed 10
 
 # RPC
 
-**FYI:** Procedure is another name of function.
+**FYI:** Procedure is another name for function.
 
 **Resources**:
 * [django-modern-rpc](https://pypi.org/project/django-modern-rpc/)
